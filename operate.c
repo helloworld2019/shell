@@ -1,10 +1,5 @@
-//#include "shell.h"
+#include "shell.h"
 #include "head.h"
-struct  node{
-	char* c;
-	struct node* left;
-	struct node* right;
-};
 
 void init(struct node* a){
 	memset(a->c,'\0',100);
@@ -46,21 +41,22 @@ struct node* operate(char** buffer,int left , int right){
 }
 
 void deal(struct node* root){
-	if(*(root->c)=='|'||*(root->c)=='>'){
-		deal(root->left);
-		deal(root->right);
+		if(*(root->c)=='|'||*(root->c)=='>'){
+			deal(root->left);
+			deal(root->right);		
+		}
+
+		else if(*(root->c)=='<'){
+			deal(root->right);
+			deal(root->left);		
+		}
+
+		else{
+		 		excute(root->c);
+		}
 		
-	}
-
-	else if(*(root->c)=='<'){
-		deal(root->right);
-		deal(root->right);
-	}
-
-	else
-	 return excute(root);
-	
 }
+	
 
 void readnode(struct node* root){
 	if(root==NULL)return;

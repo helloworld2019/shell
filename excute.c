@@ -1,12 +1,17 @@
 #include "head.h"
 #include "shell.h"
-extern int fd[2];
-extern int tempory[2];
+#include "pipe.h"
+
+extern struct mypipe* mp;
+
 int divide_arg(char* arg , char* a[ARGC]){
 	int i = 0;
 	int flag = 1;
+	while(*arg==32){
+			arg++;
+	}
 	while(flag){
-		a[i]=malloc(sizeof(char)*ARGL);
+		a[i]=(char*)malloc(sizeof(char)*ARGL);
 		for(int i1 = 0; i1 < ARGL ; i1++)a[i][i1]=0;
 		int k = 0;
 		while(*arg){
@@ -27,10 +32,12 @@ int divide_arg(char* arg , char* a[ARGC]){
 }
 
 void filecopy(int from , int to){
-	char buffer[100];
-	for(int i = 0; i< 1000 ; i ++)buffer[i]=0;
-	read(from,buffer,MAXBUFFER);
-	write(to,buffer,strlen(buffer));
+	char buffer[1000];
+	for(int i = 0; i< 1000 ; i++)buffer[i]=0;
+	int byte =	read(from,buffer,MAXBUFFER);
+//	printf("%d bytes \n",byte);
+//	printf("%s\n",buffer);
+	byte = write(to,buffer,byte);
 }
 
 
@@ -45,23 +52,26 @@ void excute(char* command){
 	char* a[ARGC];
 	for(int i =0 ; i< ARGC ;i++)a[i]=0;
 	int argc = divide_arg(command , a );
-		pid_t pid = fork();
-		if(pid<0){
-			perror("fork error");
-			exit(1);
+	pid_t pid = fork();
+	if(pid<0){
+		perror("fork error");
+		exit(1);
+	}
+	if(pid==0){
+		int flag = open(a[0],O_RDWR);
+		if(flag>0){
+			dup2(mp->r,0);
+			dup2(mp->w,1);
+			execlp("cat","cat",a[0],NULL);
+			exit(2);
 		}
-		if(pid==0){
-				dup2(fd[READ],0);
-				dup2(tempory[WRITE],1);
-				execvp(a[0],a);
-				int t = open(a[0],O_RDWR);
-				dup2(t,0);
-				execlp("cat","cat",a[0],NULL);
-				perror("exec error");
-				exit(2);
-			}
-	wait(NULL);
-	filecopy(tempory[WRITE],fd[READ]);	
+		dup2(mp->r,0);
+		dup2(mp->w,1);
+		execvp(a[0],a);
+		exit(2);
+	}
+	waitpid(0,NULL,0);
+	mp->transfer();
 	clean(a);
 }
 
