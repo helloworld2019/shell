@@ -4,7 +4,7 @@ struct node{
 	struct node* right;
 };
 void prompt();
-void excute(char* command );
+void excute(char* command , int  );
 void filecopy(int from , int to);
 void blank(char* );
 struct node* operate(char** ,int left , int right);

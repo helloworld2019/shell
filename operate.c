@@ -41,18 +41,23 @@ struct node* operate(char** buffer,int left , int right){
 }
 
 void deal(struct node* root){
-		if(*(root->c)=='|'||*(root->c)=='>'){
+		if(*(root->c)=='|'){
 			deal(root->left);
 			deal(root->right);		
 		}
-
+		
+		else if(*(root->c)=='>'){
+			deal(root->left);
+			excute(root->right->c,1);	
+			return;	
+		}
 		else if(*(root->c)=='<'){
 			deal(root->right);
 			deal(root->left);		
 		}
 
 		else{
-		 		excute(root->c);
+		 		excute(root->c,0);
 		}
 		
 }

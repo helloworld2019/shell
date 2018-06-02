@@ -48,7 +48,7 @@ void clean(char* a[ARGC]){
 	}
 }
 
-void excute(char* command){
+void excute(char* command,int dir){
 	char* a[ARGC];
 	for(int i =0 ; i< ARGC ;i++)a[i]=0;
 	int argc = divide_arg(command , a );
@@ -59,6 +59,12 @@ void excute(char* command){
 	}
 	if(pid==0){
 		int flag = open(a[0],O_RDWR);
+		if(dir==1){
+			dup2(mp->r,0);
+			dup2(flag,1);
+			execlp("cat","cat",NULL);
+			exit(2);
+		}
 		if(flag>0){
 			dup2(mp->r,0);
 			dup2(mp->w,1);
@@ -71,7 +77,12 @@ void excute(char* command){
 		exit(2);
 	}
 	waitpid(0,NULL,0);
-	mp->transfer();
+	if(dir==0){
+		mp->transfer();
+	}
+	else{
+		mp->cleanpipe();
+	}
 	clean(a);
 }
 

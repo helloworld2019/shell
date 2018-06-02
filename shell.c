@@ -18,7 +18,13 @@ int main(){
 		struct node* root =  operate(argv,0 ,part-1);
 
 		deal(root);
-	
+		
+		if(*(root->c)=='>'){
+			for(int i2 = 0 ; i2 < MAXBUFFER ; i2++)buffer[i2]=0;
+			prompt();
+			continue;
+		}
+
 		for(int i2 = 0 ; i2 < MAXBUFFER ; i2++)buffer[i2]=0;
 		read(mp->r,buffer,MAXBUFFER);
 		write(0,buffer,strlen(buffer));

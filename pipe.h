@@ -15,6 +15,11 @@ struct mypipe{
 		lseek(fd,0,SEEK_SET);
 	}
 
+	void cleanpipe(){
+		clean(r);
+		clean(w);
+	}
+
 	int transfer(){
 		char buffer[210];
 		for(int i = 0; i < 200 ; i++)buffer[i]=0;
